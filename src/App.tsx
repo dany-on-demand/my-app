@@ -1,10 +1,20 @@
 import React from "react";
 import logo from "./logo.svg";
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+
 import { useForm } from "./Validator";
 import { i18n } from "./i18n";
 
 import "./App.css";
+
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
 
 interface User {
   login: string;
@@ -21,7 +31,10 @@ function App() {
     validations: {
       login: {
         custom: {
-          isValid: (value) => RegExp(EMAIL_REGEXP).test(value),
+          isValid: (value) =>
+            value.length > 5 && // 5+ znaků
+            RegExp(EMAIL_REGEXP).test(value) && // zavináč :)
+            RegExp("^[a-z0-9.-]*@.*$").test(value), // zbytek
           message: i18n[lang]["validation.login"],
         },
       },
@@ -39,30 +52,36 @@ function App() {
   });
 
   return (
-    <div className="App">
-      <form className="App-header" onSubmit={handleSubmit} id="loginForm">
-        <input
-          type="email"
-          placeholder="Login"
-          value={data.login || ""}
-          onChange={handleChange("login")}
-          required
-        />
-        {errors.login && <p className="error">{errors.login}</p>}
+    <ThemeProvider theme={darkTheme}>
+      <div className="App">
+        <CssBaseline />
+        <form className="App-header" onSubmit={handleSubmit} id="loginForm">
+          <TextField
+            variant="standard"
+            // type="email" // lze využít nativní validace
+            type="text"
+            placeholder="Login"
+            value={data.login || ""}
+            onChange={handleChange("login")}
+            required
+          />
+          {errors.login && <p className="error">{errors.login}</p>}
 
-        <input
-          type="password"
-          value={data.pw || ""}
-          onChange={handleChange("pw")}
-          required
-        />
-        {errors.pw && <p className="error">{errors.pw}</p>}
+          <TextField
+            variant="standard"
+            type="password"
+            value={data.pw || ""}
+            onChange={handleChange("pw")}
+            required
+          />
+          {errors.pw && <p className="error">{errors.pw}</p>}
 
-        <Button type="submit" variant="contained" form="loginForm">
-          Login
-        </Button>
-      </form>
-    </div>
+          <Button type="submit" variant="contained" form="loginForm">
+            Login
+          </Button>
+        </form>
+      </div>
+    </ThemeProvider>
   );
 }
 
