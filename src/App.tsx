@@ -45,7 +45,25 @@ function App() {
         },
       },
     },
-    onSubmit: () => alert("User submitted!"),
+    onSubmit: async () => {
+      const url = "http://[::1]:5000";
+      const response = await fetch(url + "/login", {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+        },
+        body: JSON.stringify({ login: data.login, pw: data.pw }),
+      });
+      if (response.ok) {
+        const parsed = await response.json();
+        if (parsed.status === "ok") alert("Login successful");
+        else alert("Error: " + parsed.message);
+      } else {
+        console.log(response);
+      }
+    },
     initialValues: {
       login: "",
     },
